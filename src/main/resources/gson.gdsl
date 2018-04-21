@@ -1,0 +1,5 @@
+def gdslScriptContext = context(scope: scriptScope(), filetypes: ["gson"])
+
+contributor([gdslScriptContext]) {
+    delegatesTo(findClass("com.budjb.views.gson.GsonScript"))
+}

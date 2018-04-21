@@ -1,0 +1,100 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.1.RELEASE'
+    }
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { setUrl('http://repo.spring.io/plugins-release') }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'io.spring.gradle:propdeps-plugin:0.0.9.RELEASE'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+    }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'propdeps'
+apply plugin: 'propdeps-maven'
+apply plugin: 'propdeps-idea'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+group = 'com.budjb'
+version = '1.0.0'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.codehaus.groovy:groovy')
+    compile('org.codehaus.groovy:groovy-json')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+
+    optional "org.springframework.boot:spring-boot-configuration-processor"
+}
+
+compileJava.dependsOn(processResources)
+
+// Create the sources JAR task.
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+// Create the javadoc JAR task.
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// Define the sources and javadoc archives as artifacts.
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+// Publication configuration.
+publishing {
+    publications {
+        library(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    publications = ['library']
+    publish = true
+    pkg {
+        repo = 'spring'
+        name = project.name
+        licenses = ['Apache-2.0']
+        websiteUrl = 'https://github.com/budjb/spring-gson-views'
+        issueTrackerUrl = 'https://github.com/budjb/spring-gson-views/issues'
+        vcsUrl = 'https://github.com/budjb/spring-gson-views.git'
+        publicDownloadNumbers = true
+        githubRepo = 'budjb/spring-gson-views'
+        version {
+            released = new Date()
+            vcsTag = project.version
+        }
+    }
+}
+
+// Re-enable the JAR task.
+jar {
+    setEnabled(true)
+}

@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=com.budjb.views.gson.GsonAvailabilityProvider
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.budjb.views.gson.GsonAutoConfiguration
